@@ -5,3 +5,4 @@ Requirements
 - Ubunt 12.04 or comparable system that is able to run python susch as Mac os X or Windows.
 
 The program can be called trough the terminal/command line
+	$ python project.py /< name of book /> 
