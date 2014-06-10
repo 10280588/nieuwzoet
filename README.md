@@ -1,0 +1,1 @@
+For the company Nieuwzoet we will try to make a algorithm that can detect sexual explicit scenes in books.
