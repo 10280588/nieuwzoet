@@ -1,29 +1,47 @@
 #!/usr/bin/python
 
 import sys
+from ngrams import *
 
 def main(argv):
     in_file = argv[0]
     word_file = argv[1]
     word_dictionary = create_word_dictionary(word_file)
-    print(word_dictionary)
-    paragraphs = find_paragraphs(in_file)    
-    # print_paragraphs(paragraphs)
-    find_expliciteness(paragraphs, word_dictionary)
+    onegram_book = countNgrams(in_file, 1)
+    sentences = find_sentences(in_file) 
+    exp_sentences = find_expliciteness(sentences, word_dictionary)
+    output = open('output.txt','w')
+    for i in range(0, len(exp_sentences)):
+        output.write(exp_sentences[i])
+        output.write('\n---------\n') 
+    output.close()    
+    onegram_expl = countNgrams('output.txt', 1)
+    find_new_words(onegram_book, onegram_expl)
     
-def find_paragraphs(in_file):
+    
+def find_new_words(book, explicit):
+    for word in explicit:
+        if word in book:
+            ratio =  float(explicit[word]) / book[word]
+            print word + '   ' + str(ratio)
+        else:
+            continue
+    
+def find_sentences(in_file):
     read_file = open(in_file, 'r')
-    paragraphs = []
+    sentences = []
     sentence = ''
     for line in read_file:
-        if line != '\n':
-            sentence = sentence + line
-        else:
-            paragraphs.append(sentence)
-            sentence = ''
-    paragraphs.append(sentence)
+        for word in line.split(" "):
+            if not '.' in word:
+                sentence = sentence + word + ' '
+            else:
+                sentence = sentence + word
+                sentences.append(sentence)
+                sentence = ''
+    sentences.append(sentence)
     read_file.close()     
-    return paragraphs                    
+    return sentences                    
 
 
 
@@ -32,24 +50,27 @@ def create_word_dictionary(word_file):
     read_file = open(word_file, 'r')
     for line in read_file:
         line2 = line.strip('\n')
-        dictionary.update({line2:0})    
+        line2 = line2.split(" ")
+        dictionary.update({line2[0]:0})    
     read_file.close()
     return dictionary
 
-def print_paragraphs(paragraphs):
-    for i in range(0, len(paragraphs)):
+def print_sentences(sentences):
+    for i in range(0, len(sentences)):
         print('----------------')  
-        print(paragraphs[i])
-    print(len(paragraphs))   
+        print(sentences[i])
+    print(len(sentences))   
 
 
-def find_expliciteness(paragraphs, word_dictionary):
-    for i in range(0, len(paragraphs)):
-        words = paragraphs[i].split(" ")
+def find_expliciteness(sentences, word_dictionary):
+    exp_sentence = []
+    for i in range(0, len(sentences)):
+        words = sentences[i].split(" ")
         for word in words:
-            if word in word_dictionary:
-                print(paragraphs[i])
+            if word in word_dictionary and sentences[i] not in exp_sentence:
+                exp_sentence.append(sentences[i])
                 break
+    return exp_sentence
             
             
             
