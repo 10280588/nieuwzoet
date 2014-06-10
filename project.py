@@ -2,6 +2,7 @@
 
 import sys
 import time
+import datetime
 from ngrams import *
 
 def main(argv):
@@ -10,15 +11,32 @@ def main(argv):
     word_dictionary = create_word_dictionary(word_file)
     onegram_book = countNgrams(in_file, 1)
     sentences = find_sentences(in_file) 
-    exp_sentences = find_expliciteness(sentences, word_dictionary)
-    output = open('output.txt','w')
+    exp_sentences = find_expliciteness(sentences, word_dictionary) 
+    time1 = time.time()
+    timestamp = datetime.datetime.fromtimestamp(int(time1)).strftime('%H:%M:%S')
+    global output_file
+    output_file = 'output_' + timestamp +'.txt'  
+    write_output(exp_sentences, word_dictionary) 
+    onegram_expl = countNgrams(output_file, 1)
+    
+    find_new_words(onegram_book, onegram_expl)
+
+
+def write_output(exp_sentences, word_dictionary): 
+    output = open(output_file,'w')
     for i in range(0, len(exp_sentences)):
-        output.write(exp_sentences[i])
+        new_sentence = ''
+        words = exp_sentences[i].split(" ")
+        for word in words:
+            if word in word_dictionary:
+                new_word = word.upper()
+            else:
+                new_word = word
+            new_sentence = new_sentence + new_word + ' '
+        output.write(new_sentence)
         output.write('\n---------\n') 
     output.close()    
-    onegram_expl = countNgrams('output.txt', 1)
-    find_new_words(onegram_book, onegram_expl)
-    
+
     
 def find_new_words(book, explicit):
     for word in explicit:
