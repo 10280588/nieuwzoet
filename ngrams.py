@@ -3,6 +3,7 @@
 import sys
 import time
 
+
 # The main function which handles the arguments, finds all ngrams and outputs the
 # m most frequent ngrams.
 def main(argv):
@@ -60,7 +61,12 @@ def countNgrams(corpus, n):
     dictionary = []
     for line in f:
         for word in line.split():
-            dictionary.append(word)
+            new_word = ''
+            for letter in word:
+                if letter.isalpha():
+                    new_word = new_word + letter
+            new_word = new_word.upper()
+            dictionary.append(new_word)
     f.close()
 
     # Find all the ngrams of size n and store them in a dictionary.
